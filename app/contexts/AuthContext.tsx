@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import React, { createContext, useState, useContext, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Session, User } from '@supabase/supabase-js'
+import { Session, User, AuthError } from '@supabase/supabase-js'
 
 interface AuthContextType {
     user: User | null
@@ -21,33 +22,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = createClientComponentClient()
 
     useEffect(() => {
-        const setData = async () => {
-            const { data: { session }, error } = await supabase.auth.getSession()
-            if (error) {
-                console.error('Error fetching session:', error)
-            } else {
-                setSession(session)
-                setUser(session?.user ?? null)
+        const initializeAuth = async () => {
+            try {
+                // セッションの取得
+                const { data: { session }, error } = await supabase.auth.getSession()
+                if (error) throw error
+
+                if (session) {
+                    setSession(session)
+                    setUser(session.user)
+                }
+            } catch (error) {
+                console.error('Error initializing auth:', error)
+            } finally {
+                setLoading(false)
             }
-            setLoading(false)
         }
 
-        setData()
+        initializeAuth()
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            console.log('Auth state changed:', session)
+        // Auth状態の変更を監視
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('Auth state changed:', event, session)
             setSession(session)
             setUser(session?.user ?? null)
+
+            // セッションが切れた場合の処理
+            if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+                setSession(null)
+                setUser(null)
+            }
         })
 
-        return () => subscription.unsubscribe()
+        return () => {
+            subscription.unsubscribe()
+        }
     }, [supabase.auth])
 
     const login = async (email: string, password: string) => {
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            })
             if (error) throw error
-            console.log('Login successful:', data)
+
+            // ログイン成功時の処理
             setSession(data.session)
             setUser(data.user)
         } catch (error) {
@@ -60,7 +80,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             const { error } = await supabase.auth.signOut()
             if (error) throw error
-            console.log('Logout successful')
+
+            // ログアウト成功時の処理
             setSession(null)
             setUser(null)
         } catch (error) {
@@ -71,8 +92,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const signup = async (email: string, password: string) => {
         try {
-            const { data, error } = await supabase.auth.signUp({ email, password })
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    emailRedirectTo: `${window.location.origin}/auth/callback`,
+                },
+            })
             if (error) throw error
+
+            // サインアップ成功の処理
             console.log('Signup successful:', data)
         } catch (error) {
             console.error('Signup error:', error)
