@@ -8,8 +8,9 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearSca
 import { Pie, Bar } from 'react-chartjs-2'
 import Link from 'next/link'
 import { getReadingRecords, ReadingRecord } from '@/lib/reading-records'
-import { getReadingGoal, ReadingGoal } from '@/lib/reading-goals'
+import { getReadingGoal, ReadingGoal, testSupabaseConnection } from '@/lib/reading-goals'
 import { useAuth } from '@/app/contexts/AuthContext'
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title)
 
@@ -22,18 +23,33 @@ export default function Dashboard() {
 
     useEffect(() => {
         async function fetchData() {
-            if (!user) return
+            if (!user) {
+                console.log('User not logged in, skipping data fetch')
+                setIsLoading(false)
+                return
+            }
             try {
                 setIsLoading(true)
+
+                console.log('Testing Supabase connection...')
+                const isConnected = await testSupabaseConnection()
+                if (!isConnected) {
+                    throw new Error('Supabaseとの接続に失敗しました。')
+                }
+                console.log('Supabase connection test passed')
+
+                console.log('Fetching reading records and goal...')
                 const [fetchedRecords, fetchedGoal] = await Promise.all([
                     getReadingRecords(),
                     getReadingGoal(user.id, new Date().getFullYear())
                 ])
+                console.log('Fetched reading records:', fetchedRecords)
+                console.log('Fetched reading goal:', fetchedGoal)
                 setReadingRecords(fetchedRecords)
                 setReadingGoal(fetchedGoal)
             } catch (err) {
-                setError('データの取得に失敗しました。')
-                console.error(err)
+                console.error('Error fetching dashboard data:', err)
+                setError(err instanceof Error ? err.message : 'データの取得に失敗しました。')
             } finally {
                 setIsLoading(false)
             }
@@ -80,12 +96,12 @@ export default function Dashboard() {
     const goalProgress = readingGoal ? (completedBooksCount / readingGoal.target_books) * 100 : 0
 
     if (isLoading) return <div className="text-center mt-8">読み込み中...</div>
-    if (error) return <div className="text-center mt-8 text-red-500">{error}</div>
+    if (error) return <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>
 
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-3xl font-bold mb-6">読書統計ダッシュボード</h1>
-            {readingGoal && (
+            {readingGoal ? (
                 <Card className="mb-6">
                     <CardHeader>
                         <CardTitle>{readingGoal.year}年の読書目標</CardTitle>
@@ -97,8 +113,7 @@ export default function Dashboard() {
                         <p className="mt-2">{goalProgress.toFixed(1)}% 達成</p>
                     </CardContent>
                 </Card>
-            )}
-            {!readingGoal && (
+            ) : (
                 <Card className="mb-6">
                     <CardContent>
                         <p>読書目標が設定されていません。</p>
