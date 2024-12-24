@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import { useState } from 'react'
@@ -18,6 +17,7 @@ export default function Signup() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
     const { signup } = useAuth()
 
@@ -25,12 +25,22 @@ export default function Signup() {
         e.preventDefault()
         setError(null)
         setSuccess(null)
+        setIsLoading(true)
+
         try {
             await signup(email, password)
             setSuccess('アカウントが作成されました。確認メールをご確認ください。')
+            // 成功後、3秒後にログインページへリダイレクト
+            setTimeout(() => router.push('/login'), 3000)
         } catch (error: any) {
             console.error('サインアップエラー:', error)
-            setError('アカウントの作成に失敗しました。もう一度お試しください。')
+            if (error.message.includes('For security purposes, you can only request this after')) {
+                setError('セキュリティのため、しばらく待ってから再度お試しください。')
+            } else {
+                setError('アカウントの作成に失敗しました。もう一度お試しください。')
+            }
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -85,7 +95,9 @@ export default function Signup() {
                         </div>
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                        <Button type="submit">アカウント作成</Button>
+                        <Button type="submit" disabled={isLoading}>
+                            {isLoading ? '処理中...' : 'アカウント作成'}
+                        </Button>
                         <Link href="/login" className="text-sm text-blue-600 hover:underline">
                             ログイン
                         </Link>
@@ -95,4 +107,3 @@ export default function Signup() {
         </div>
     )
 }
-
