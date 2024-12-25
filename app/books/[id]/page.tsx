@@ -70,7 +70,7 @@ export default function BookDetail() {
 
   if (isLoading) return <div className="text-center mt-8">読み込み中...</div>
   if (error) return (
-    <Alert variant="destructive" className="mt-8">
+    <Alert variant="destructive" className="mt-8 mx-4">
       <AlertDescription>{error}</AlertDescription>
     </Alert>
   )
@@ -80,50 +80,52 @@ export default function BookDetail() {
     <div className="container mx-auto p-4">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>{book.title}</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl md:text-3xl">{book.title}</CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-gray-600 mb-2">著者: {book.author}</p>
+        <CardContent className="space-y-4">
+          <p className="text-gray-600 text-sm sm:text-base">著者: {book.author}</p>
           {book.published_year && (
-            <p className="text-gray-600 mb-2">出版年: {book.published_year}</p>
+            <p className="text-gray-600 text-sm sm:text-base">出版年: {book.published_year}</p>
           )}
           {book.description && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold mb-2">概要</h3>
-              <p>{book.description}</p>
+              <p className="text-sm sm:text-base">{book.description}</p>
             </div>
           )}
           {book.reading_records && book.reading_records.length > 0 && (
             <div className="mt-6">
               <h3 className="text-lg font-semibold mb-2">読書記録</h3>
-              {book.reading_records.map((record) => (
-                <div key={record.id} className="mb-4 p-4 border rounded-lg">
-                  <div className="flex justify-between items-center mb-2">
-                    <Badge>{record.status}</Badge>
-                    <span className="text-sm text-gray-500">
-                      {record.created_at
-                        ? new Date(record.created_at).toLocaleDateString()
-                        : '日付不明'}
-                    </span>
+              <div className="space-y-4">
+                {book.reading_records.map((record) => (
+                  <div key={record.id} className="p-4 border rounded-lg">
+                    <div className="flex flex-wrap justify-between items-center mb-2">
+                      <Badge className="mb-2 sm:mb-0">{record.status}</Badge>
+                      <span className="text-xs sm:text-sm text-gray-500">
+                        {record.created_at
+                          ? new Date(record.created_at).toLocaleDateString()
+                          : '日付不明'}
+                      </span>
+                    </div>
+                    <p className="text-sm sm:text-base mb-2">進捗: {record.progress}%</p>
+                    {record.thoughts && (
+                      <p className="text-xs sm:text-sm text-gray-700">{record.thoughts}</p>
+                    )}
                   </div>
-                  <p className="mb-2">進捗: {record.progress}%</p>
-                  {record.thoughts && (
-                    <p className="text-sm text-gray-700">{record.thoughts}</p>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button asChild variant="outline">
+        <CardFooter className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+          <Button asChild variant="outline" className="w-full sm:w-auto">
             <Link href={`/books/${book.id}/edit`}>
               編集
             </Link>
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive">削除</Button>
+              <Button variant="destructive" className="w-full sm:w-auto">削除</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -141,7 +143,7 @@ export default function BookDetail() {
         </CardFooter>
       </Card>
       <div className="mt-4 text-center">
-        <Link href="/books" className="text-blue-600 hover:underline">
+        <Link href="/books" className="text-blue-600 hover:underline text-sm sm:text-base">
           書籍一覧に戻る
         </Link>
       </div>

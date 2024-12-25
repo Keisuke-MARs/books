@@ -54,22 +54,22 @@ export default function BookList() {
 
   if (isLoading) return <div className="text-center mt-8">読み込み中...</div>
   if (!user) return (
-    <Alert variant="destructive" className="mt-8">
+    <Alert variant="destructive" className="mt-8 mx-4">
       <AlertDescription>ログインが必要です。</AlertDescription>
     </Alert>
   )
   if (error) return (
-    <Alert variant="destructive" className="mt-8">
+    <Alert variant="destructive" className="mt-8 mx-4">
       <AlertDescription>{error}</AlertDescription>
     </Alert>
   )
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">書籍一覧</h1>
-        <Link href="/books/add" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
-          新しい書籍を追加
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+        <h1 className="text-2xl sm:text-3xl font-bold">書籍一覧</h1>
+        <Link href="/books/add" className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto">新しい書籍を追加</Button>
         </Link>
       </div>
       <div className="mb-4">
@@ -81,19 +81,21 @@ export default function BookList() {
           className="w-full"
         />
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {filteredBooks.map((book) => (
-          <Card key={book.id} className="bg-white p-4 rounded-lg shadow-md transition duration-300 ease-in-out hover:shadow-xl hover:scale-105">
+          <Card key={book.id} className="flex flex-col justify-between">
             <CardHeader>
-              <CardTitle>{book.title}</CardTitle>
+              <CardTitle className="text-lg sm:text-xl">{book.title}</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-4">著者: {book.author}</p>
-              {book.published_year && (
-                <p className="text-gray-600 mb-4">出版年: {book.published_year}</p>
-              )}
-              <Button asChild variant="outline">
-                <Link href={`/books/${book.id}`} className="text-blue-600 hover:text-blue-800 hover:underline transition duration-300 ease-in-out">
+            <CardContent className="flex flex-col justify-between flex-grow">
+              <div>
+                <p className="text-gray-600 mb-2 text-sm sm:text-base">著者: {book.author}</p>
+                {book.published_year && (
+                  <p className="text-gray-600 mb-2 text-sm sm:text-base">出版年: {book.published_year}</p>
+                )}
+              </div>
+              <Button asChild variant="outline" className="mt-4">
+                <Link href={`/books/${book.id}`}>
                   詳細を見る
                 </Link>
               </Button>
@@ -102,7 +104,7 @@ export default function BookList() {
         ))}
       </div>
       {filteredBooks.length === 0 && (
-        <p className="text-center mt-4">検索結果がありません。</p>
+        <p className="text-center mt-4 text-sm sm:text-base">検索結果がありません。</p>
       )}
     </div>
   )

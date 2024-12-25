@@ -9,7 +9,7 @@ export interface ReadingRecord {
   progress: number
   thoughts?: string | null
   completed_at?: string | null
-  created_at: string  // この行を追加
+  created_at: string
   books: {
     id: number
     title: string
@@ -60,6 +60,7 @@ export async function getReadingRecords(userId: string): Promise<ReadingRecord[]
 
 export async function getReadingRecord(id: number, userId: string): Promise<ReadingRecord | null> {
   try {
+    console.log(`Fetching reading record with id ${id} for user ${userId}`)
     const { data, error } = await supabase
       .from('reading_records')
       .select(`
@@ -75,16 +76,23 @@ export async function getReadingRecord(id: number, userId: string): Promise<Read
       .single()
 
     if (error) {
+      console.error('Supabase error details:', JSON.stringify(error, null, 2))
       if (error.code === 'PGRST116') {
+        console.log('No reading record found with the given id and user_id')
         return null
       }
-      console.error('Error fetching reading record:', error)
       throw new Error(`Failed to fetch reading record: ${error.message}`)
     }
 
+    if (!data) {
+      console.log('No reading record data returned')
+      return null
+    }
+
+    console.log('Successfully fetched reading record:', data)
     return data as ReadingRecord
   } catch (error) {
-    console.error('Unexpected error in getReadingRecord:', error)
+    console.error('Detailed error in getReadingRecord:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to fetch reading record: ${error.message}`)
     } else {
