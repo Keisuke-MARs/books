@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Link from 'next/link'
 import { AuthProvider } from '@/app/contexts/AuthContext'
 import { NavBar } from '@/app/components/NavBar'
 
@@ -19,13 +17,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja">
-      <body className={inter.className}>
+    <html lang="ja" className="min-h-screen">
+      <body className={`${inter.className} min-h-screen bg-gray-50`}>
         <AuthProvider>
-          <NavBar />
-          <main className="container mx-auto mt-8 px-4">
-            {children}
-          </main>
+          <div className="flex flex-col min-h-screen">
+            <NavBar />
+            <main className="flex-grow container mx-auto py-8">
+              {children}
+            </main>
+            <footer className="mt-auto py-4 text-center text-sm text-gray-600 border-t">
+              <p>© 2024 オンライン書籍管理システム</p>
+            </footer>
+          </div>
         </AuthProvider>
       </body>
     </html>
