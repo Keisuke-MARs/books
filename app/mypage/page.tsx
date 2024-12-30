@@ -9,8 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAuth } from '@/app/contexts/AuthContext'
-import { getReadingStatistics, ReadingStatistics } from '@/lib/reading-statistics'
-import { testSupabaseConnection } from '@/lib/supabase'
+import { getReadingStatistics, ReadingStatistics, testSupabaseConnection } from '@/lib/reading-statistics'
 
 export default function MyPage() {
   const [statistics, setStatistics] = useState<ReadingStatistics | null>(null)
@@ -96,7 +95,7 @@ export default function MyPage() {
                   <Input
                     id="name"
                     value={userProfile.name || ''}
-                    onChange={(e) => updateUserProfile({...userProfile, name: e.target.value})}
+                    onChange={(e) => updateUserProfile({ ...userProfile, name: e.target.value })}
                     required
                   />
                 </div>
@@ -106,7 +105,7 @@ export default function MyPage() {
                     id="email"
                     type="email"
                     value={userProfile.email}
-                    onChange={(e) => updateUserProfile({...userProfile, email: e.target.value})}
+                    onChange={(e) => updateUserProfile({ ...userProfile, email: e.target.value })}
                     required
                   />
                 </div>
@@ -115,7 +114,7 @@ export default function MyPage() {
                   <Input
                     id="bio"
                     value={userProfile.bio || ''}
-                    onChange={(e) => updateUserProfile({...userProfile, bio: e.target.value})}
+                    onChange={(e) => updateUserProfile({ ...userProfile, bio: e.target.value })}
                   />
                 </div>
               </CardContent>
@@ -149,19 +148,19 @@ export default function MyPage() {
                   type="checkbox"
                   id="emailNotifications"
                   checked={userProfile.emailNotifications || false}
-                  onChange={(e) => updateUserProfile({...userProfile, emailNotifications: e.target.checked})}
+                  onChange={(e) => updateUserProfile({ ...userProfile, emailNotifications: e.target.checked })}
                   className="form-checkbox"
                 />
                 <Label htmlFor="emailNotifications">メール通知を受け取る</Label>
               </div>
               <Button
-                onClick={() => {/* パスワード変更ロジック */}}
+                onClick={() => {/* パスワード変更ロジック */ }}
                 variant="outline"
               >
                 パスワードを変更
               </Button>
               <Button
-                onClick={() => {/* アカウント削除ロジック */}}
+                onClick={() => {/* アカウント削除ロジック */ }}
                 variant="destructive"
               >
                 アカウントを削除
