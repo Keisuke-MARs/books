@@ -12,6 +12,12 @@ const supabase = createClientComponentClient<Database>()
 
 export async function getReadingStatistics(userId: string): Promise<ReadingStatistics> {
   try {
+    // Supabase接続テスト
+    const isConnected = await testSupabaseConnection()
+    if (!isConnected) {
+      throw new Error('Supabaseとの接続に失敗しました。')
+    }
+
     // 総読書冊数を取得
     const { count: totalBooks, error: totalBooksError } = await supabase
       .from('reading_records')
@@ -54,7 +60,8 @@ export async function getReadingStatistics(userId: string): Promise<ReadingStati
     const totalReadingTime = readingTimes ? readingTimes.reduce((sum, session) => sum + session.duration, 0) : 0
     const averageReadingTime = readingTimes && readingTimes.length > 0 ? Math.round(totalReadingTime / readingTimes.length) : 0
 
-    // 最も読んだジャンルを取得
+    // 最も読んだジャンルを取得（一時的にコメントアウト）
+    /*
     console.log('Fetching genres...')
     const { data: genres, error: genresError } = await supabase
       .from('books')
@@ -62,11 +69,21 @@ export async function getReadingStatistics(userId: string): Promise<ReadingStati
       .eq('user_id', userId)
 
     if (genresError) {
-      console.error('Error fetching genres:', genresError)
-      throw genresError
+      console.error('Error fetching genres:', JSON.stringify(genresError, null, 2))
+      throw new Error(`ジャンルの取得に失敗しました: ${genresError.message}`)
     }
 
-    console.log('Fetched genres:', genres)
+    console.log('Fetched genres:', JSON.stringify(genres, null, 2))
+
+    if (!genres || genres.length === 0) {
+      console.log('No genres found for the user')
+      return {
+        totalBooks: totalBooks || 0,
+        booksThisMonth: booksThisMonth || 0,
+        averageReadingTime,
+        topGenre: '不明'
+      }
+    }
 
     const genreCounts = genres.reduce((acc, { genre }) => {
       if (genre) {
@@ -78,6 +95,9 @@ export async function getReadingStatistics(userId: string): Promise<ReadingStati
     const topGenre = Object.entries(genreCounts).length > 0
       ? Object.entries(genreCounts).reduce((a, b) => a[1] > b[1] ? a : b)[0]
       : '不明'
+    */
+
+    const topGenre = '現在利用できません' // 一時的な対処
 
     return {
       totalBooks: totalBooks || 0,
@@ -92,6 +112,24 @@ export async function getReadingStatistics(userId: string): Promise<ReadingStati
     } else {
       throw new Error('読書統計の取得に失敗しました: 不明なエラー')
     }
+  }
+}
+
+export async function testSupabaseConnection(): Promise<boolean> {
+  try {
+    console.log('Testing Supabase connection...')
+    const { data, error } = await supabase.from('books').select('count', { count: 'exact', head: true })
+
+    if (error) {
+      console.error('Supabase connection test failed:', JSON.stringify(error, null, 2))
+      return false
+    }
+
+    console.log('Supabase connection test successful. Books count:', data)
+    return true
+  } catch (error) {
+    console.error('Unexpected error in testSupabaseConnection:', error)
+    return false
   }
 }
 
