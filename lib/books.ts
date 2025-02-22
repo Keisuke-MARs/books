@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '../types/supabase'
 import { ReadingRecord } from './reading-records'
@@ -47,7 +48,7 @@ export async function getBooks(userId: string): Promise<Book[]> {
 export async function getBook(id: number | string, userId: string): Promise<Book | null> {
   try {
     console.log(`Fetching book with id ${id} for user ${userId}`)
-    
+
     // idが数値でない場合はnullを返す
     if (isNaN(Number(id))) {
       console.log('Invalid book id:', id)

@@ -28,7 +28,7 @@ export default function AddBook() {
       return
     }
     if (!title || !author) {
-      setError('タイトルと著者は必須です���')
+      setError('タイトルと著者は必須です')
       return
     }
     setIsLoading(true)

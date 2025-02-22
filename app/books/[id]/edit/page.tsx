@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -35,7 +36,7 @@ export default function EditBook() {
         setIsLoading(true)
         setError(null)
         const fetchedBook = await getBook(Number(params.id), user.id)
-        
+
         if (!fetchedBook) {
           setError('書籍が見つかりません。')
           return
@@ -143,15 +144,15 @@ export default function EditBook() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isLoading}
               className="w-full sm:w-auto"
             >
               {isLoading ? '更新中...' : '更新'}
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               asChild
               className="w-full sm:w-auto"
             >

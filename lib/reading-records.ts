@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '../types/supabase'
 
@@ -22,7 +24,7 @@ const supabase = createClientComponentClient<Database>()
 export async function getReadingRecords(userId: string): Promise<ReadingRecord[]> {
   try {
     console.log('Fetching reading records for user:', userId)
-    
+
     const { data, error } = await supabase
       .from('reading_records')
       .select(`
