@@ -7,7 +7,7 @@ import { NavBar } from '@/app/components/NavBar'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'オンライン書籍管理システム',
+  title: 'オンライン読書記録システム',
   description: '書籍の管理と読書記録を簡単に',
 }
 
@@ -26,7 +26,7 @@ export default function RootLayout({
               {children}
             </main>
             <footer className="mt-auto py-4 text-center text-sm text-gray-600 border-t">
-              <p>© 2024 オンライン書籍管理システム</p>
+              <p>© 2024 オンライン読書記録システム</p>
             </footer>
           </div>
         </AuthProvider>
