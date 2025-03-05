@@ -11,7 +11,7 @@ const Home: FC = () => {
       </h1>
       <div className='grid gap-4 md:grid-cols-2 max-w-4xl mx-auto'>
         <div className='bg-white p-6 rounded-lg shadow-md transition duration-300 ease-in-out hover:shadow-xl hover:scale-105'>
-          <h2 className='text-lg sm:text-xl font-semibold mb-2'>書籍管理</h2>
+          <h2 className='text-lg sm:text-xl font-semibold mb-2'>読書記録アプリ</h2>
           <p className='mb-4 text-sm sm:text-base'>あなたの読書リストを管理します</p>
           <Link
             href="/books"
